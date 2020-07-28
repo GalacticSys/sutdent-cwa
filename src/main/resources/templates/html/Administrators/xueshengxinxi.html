@@ -1,0 +1,629 @@
+<!DOCTYPE HTML>
+<html lang="ec" xmlns:th="http://www.thymeleaf.org">
+<head>
+<!-- 引入css样式文件 -->
+<!-- 引入css样式文件 -->
+<link href="/css/bootstrap-theme.css" rel="stylesheet" />
+<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
+<link href="/css/bootstrap.css" rel="stylesheet"/>
+<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+<!--导入bootstrap.js包-->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>	
+<style type="text/css">
+.input-block-level{
+	border-top-right-radius: 5px; 
+	border-top-left-radius: 5px; 
+	border-bottom-right-radius:5px;
+	border-bottom-left-radius:5px;
+	border: 1px solid black;
+}
+.form-inline>div
+{
+	text-align: center;
+}
+.table thead tr th{
+	text-align: center;
+}
+.table tbody tr td{
+	text-align: center;
+}
+</style>
+</head>
+
+<script type="text/javascript">
+//向修改学生信息模态框中放入要修改学生的信息
+function updateStuXinXi(stuId)
+{
+	alert(stuId);
+	$.ajax({
+		asyc:false,
+		type:"post",
+		url:"/guanliyuan/getStuXinXiById.action",
+		data:{stuId:stuId},
+		dataType:"json",
+		success:function(data) {			
+			$("#updateStuCode").val(data.stu_code);
+			$("#updateStuName").val(data.stu_name);
+			$("#updateStuIdentity").val(data.stu_identity);
+			$("#updateStuCode").val(data.stu_code);
+			$("#updateStuXingBie").val(data.stu_xingbie); 
+			$("#updateStuBanJiName").val(data.banji_id);
+			$("#updateStuFuDaoYuanName").val(data.jiaoshi_id);
+			$("#updateStuId").val(data.stu_id);
+			alert(data.jiaoshi_id);
+        },
+        error:function(data) {
+            alert(data);         
+        }
+	})
+}
+//修改学生信息 start
+//选择班级后，辅导员也会相应的变化
+function updateSetFuDaoYuanName()
+{
+	var banjiId = $("#updateStuBanJiName").val();
+	var itemJiaoShiId= document.getElementsByName("itemJiaoShiId");
+	var itemBanJiId= document.getElementsByName("itemBanJiId");
+	for(var i = 0; i < itemBanJiId.length; i++)
+	{
+		if(banjiId==itemBanJiId[i].value)
+		{
+			$("#updateStuFuDaoYuanName").val(itemJiaoShiId[i].value);
+			return;
+		}
+	}		
+}
+
+//选择辅导员后，班级也会相应的变化
+function updateSetBanJiName()
+{
+	var fuDaoYuanId = $("#updateStuFuDaoYuanName").val();
+	var itemJiaoShiId= document.getElementsByName("itemJiaoShiId");
+	var itemBanJiId= document.getElementsByName("itemBanJiId");
+	var itemBanJiName= document.getElementsByName("itemBanJiName");
+	var obj = document.getElementById("updateStuBanJiName");
+	obj.options.length=1;
+	for(var i = 0; i < itemBanJiId.length; i++)
+	{		
+		if(fuDaoYuanId == itemJiaoShiId[i].value)
+		{			
+			obj.options.add(new Option(itemBanJiName[i].value,itemBanJiId[i].value));
+		}
+	}		
+}
+//辅导员确定修改学生信息
+function queDingXiuGai()
+{	
+	var formStuXinXi=$("#fuDaoYuanXiuGaiXueShengXinXi").serialize();
+	$.ajax({
+		asyc:false,
+		type:"post",
+		cache:false,	
+		data:formStuXinXi,
+		url:"/guanliyuan/xiuGaiStuXinXi.action",		
+		dataType:"text",
+		success:function(data)
+		{
+			if(data=="OK")
+			{
+				alert("修改成功");
+				 window.location.reload();
+			}
+			if(data=="FALL")
+			{
+				alert("修改失败，请重试");
+			}
+		},
+		error:function(e)
+		{
+			alert("error");
+		}
+	})
+}
+//修改 end
+
+//新增学生信息start
+//选择班级后，辅导员也会相应的变化
+function setFuDaoYuanName()
+{
+	var banjiId = $("#createStuBanJiName").val();	
+	var itemJiaoShiId= document.getElementsByName("itemJiaoShiId");
+	var itemBanJiId= document.getElementsByName("itemBanJiId");
+	for(var i = 0; i < itemBanJiId.length; i++)
+	{
+		if(banjiId==itemBanJiId[i].value)
+		{
+			$("#createStuFuDaoYuanName").val(itemJiaoShiId[i].value);
+			return;
+		}
+	}		
+}
+
+//选择辅导员后，班级也会相应的变化
+function setBanJiName()
+{
+	var fuDaoYuanId = $("#createStuFuDaoYuanName").val();
+	var itemJiaoShiId= document.getElementsByName("itemJiaoShiId");
+	var itemBanJiId= document.getElementsByName("itemBanJiId");
+	var itemBanJiName= document.getElementsByName("itemBanJiName");
+	var obj = document.getElementById("createStuBanJiName");
+	obj.options.length=1;
+	for(var i = 0; i < itemBanJiId.length; i++)
+	{		
+		if(fuDaoYuanId == itemJiaoShiId[i].value)
+		{			
+			obj.options.add(new Option(itemBanJiName[i].value,itemBanJiId[i].value));
+		}
+	}		
+}
+//辅导员确定新增学生信息
+function queDingXinZeng()
+{
+	var result=checkID();
+	if(result==false)
+	{
+		return;
+	}
+	var createStuIdentity=$("#createStuIdentity").val();
+	var formStuXinXi=$("#fuDaoYuanCreateXueShengXinXi").serialize();
+	$.ajax({
+		asyc:false,
+		type:"post",
+		cache:false,	
+		data:formStuXinXi,
+		url:"/guanliyuan/createStuXinXi.action",		
+		dataType:"text",
+		success:function(data)
+		{
+			if(data=="OK")
+			{
+				alert("新增成功");
+				 window.location.reload();
+			}
+			if(data=="FALL")
+			{
+				alert("新增失败，请重试");
+			}
+		},
+		error:function(e)
+		{
+			alert("error");
+		}
+	})
+}
+//新增学生信息 end
+
+//删除学生信息 start
+function deleteStuXinXi(stuId)
+{
+	if(confirm('确定要删除?'))
+	{
+		$.ajax({
+			asyc:false,
+			type:"post",
+			cache:false,
+			url:"/guanliyuan/deleteStuXinXi.action",
+			data:{stuId:stuId},
+			dataType: "text",
+			success:function(data)
+			{
+				if(data=="OK")
+				{
+					alert("删除成功");
+					window.location.reload();
+				}
+				if(data=="FALL")
+				{
+					alert("删除失败，请重试");
+				}
+			},
+			error:function(data)
+			{
+				alert("error");
+			}
+		})
+	}
+}
+//刷新当前页面
+function shuaXin()
+{
+	location.reload();
+}
+
+//验证身份证格式start	
+function checkID() { 
+	var Wi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1 ];    // 加权因子   
+	var ValideCode = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ];            // 身份证验证位值.10代表X   
+	var idCard=$("#createStuIdentity").val();
+	alert(idCard.length);
+	alert("进入checkID");
+	idCard = trim(idCard.replace(/ /g, ""));               //去掉字符串头尾空格                     
+	if (idCard.length == 15) 
+	{   
+	    return isValidityBrithBy15IdCard(idCard);       //进行15位身份证的验证    
+	} 
+	else if (idCard.length == 18) 
+	{   
+	    var a_idCard = idCard.split("");                // 得到身份证数组   
+	    if(isValidityBrithBy18IdCard(idCard)&&isTrueValidateCodeBy18IdCard(a_idCard))
+	    {   //进行18位身份证的基本验证和第18位的验证
+	    	return true;   
+		}
+		else 
+		{   
+	    	return false;   
+	    }   
+	} 
+	else
+	{   
+	    return false;   
+	}   
+}   
+/**  
+ * 判断身份证号码为18位时最后的验证位是否正确  
+* @param a_idCard 身份证号码数组  
+* @return  
+*/  
+function isTrueValidateCodeBy18IdCard(a_idCard) {   
+	var sum = 0;                             // 声明加权求和变量   
+	if (a_idCard[17].toLowerCase() == 'x') 
+	{   
+		a_idCard[17] = 10;                    // 将最后位为x的验证码替换为10方便后续操作   
+	}   
+	for ( var i = 0; i < 17; i++) 
+	{   
+	    sum += Wi[i] * a_idCard[i];            // 加权求和   
+	}   
+	valCodePosition = sum % 11;                // 得到验证码所位置   
+	if (a_idCard[17] == ValideCode[valCodePosition]) 
+	{   
+	    return true;   
+	} 
+	else 
+	{   
+	    return false;   
+	}   
+}   
+/**  
+* 验证18位数身份证号码中的生日是否是有效生日  
+* @param idCard 18位书身份证字符串  
+* @return  
+*/  
+function isValidityBrithBy18IdCard(idCard18){   
+	var year =  idCard18.substring(6,10);   
+	var month = idCard18.substring(10,12);   
+	var day = idCard18.substring(12,14);   
+	var temp_date = new Date(year,parseFloat(month)-1,parseFloat(day));   
+	// 这里用getFullYear()获取年份，避免千年虫问题   
+	if(temp_date.getFullYear()!=parseFloat(year)   
+	          ||temp_date.getMonth()!=parseFloat(month)-1   
+	          ||temp_date.getDate()!=parseFloat(day))
+	{   
+		alert("身份证有误");
+	    return false;   
+	}
+	else
+	{   
+	    return true;   
+	}   
+}   
+/**  
+* 验证15位数身份证号码中的生日是否是有效生日  
+* @param idCard15 15位书身份证字符串  
+* @return  
+*/  
+function isValidityBrithBy15IdCard(idCard15){   
+	var year =  idCard15.substring(6,8);   
+	var month = idCard15.substring(8,10);   
+	var day = idCard15.substring(10,12);   
+	var temp_date = new Date(year,parseFloat(month)-1,parseFloat(day));   
+	// 对于老身份证中的你年龄则不需考虑千年虫问题而使用getYear()方法   
+	if(temp_date.getYear()!=parseFloat(year)   
+	              ||temp_date.getMonth()!=parseFloat(month)-1   
+	              ||temp_date.getDate()!=parseFloat(day))
+	{   
+		alert("身份证格式不正确");
+		return false;   
+	}
+	else
+	{   
+	    return true;   
+	}   
+}   
+//去掉字符串头尾空格   
+function trim(str) 
+{   
+	return str.replace(/(^\s*)|(\s*$)/g, "");   
+}  
+//验证身份证格式end
+</script>
+<body>
+    <!-- 学生信息查询  start-->
+	<div id="page-wrapper">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">&nbsp;&nbsp;&nbsp;&nbsp;学生信息</h1>
+				<input id="msg" name="msg" type="hidden" value="${msg}"/>
+			</div>
+			<!-- /.col-lg-12 -->
+		</div>
+		<!-- /.row -->
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<form class="form-inline" method="post" id="form1" name="form1" 
+				      action="/guanliyuan/xueShengXinXi.action">
+					<div class="form-group">
+						<label for="stuCode">学号</label> 
+						<input type="text" class="input-block-level" id="stuCode" 
+						                   th:text="${stuCode }" name="stuCode" />
+					</div>
+					<div class="form-group">
+						<label for="banjiName">班级</label> 
+						<input type="text" class="input-block-level" id="banjiName" 
+						                   th:text="${banjiName}" name="banjiName" />
+					</div>
+					<div class="form-group">
+						<label for="jiaoshiName">辅导员</label> 
+						<input type="text" class="input-block-level" id="jiaoshiName" 
+						                   th:text="${jiaoshiName}" name="jiaoshiName" />
+					</div>
+					<button type="submit" class="btn btn-primary">查询</button>
+				</form>
+			</div>
+		</div>	
+		<a href="#" class="btn btn-primary" data-toggle="modal"  style="margin-left: 8px;padding-top: -10px;"
+		           data-target="#createStuXinxi" >新建</a>	
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">学生信息列表</div>
+					<!-- /.panel-heading -->
+					<table class="table table-bordered table-striped ">
+						<thead>
+							<tr>
+								<th>学号</th>
+								<th>姓名</th>
+								<th>身份证号</th>
+								<th>性别</th>							
+								<th>班级</th>						
+								<th>辅导员</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody th:each="fieldList:${pageInfo.list}">
+							<tr>
+								<td th:text="${fieldList.stu_code}"></td>
+								<td th:text="${fieldList.stu_name}"></td>
+								<td th:text="${fieldList.stu_identity}"></td>
+								<td th:text="${fieldList.stu_xingbie}"></td>
+								<td th:text="${fieldList.banji_name}"></td>
+								<td th:text="${fieldList.jiaoshi_name}"></td>	
+								<td>
+									<a th:onclick="updateStuXinXi([[${fieldList.stu_id}]])" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#updateStuXinxi">修改</a>
+									<a th:onclick="deleteStuXinXi([[${fieldList.stu_id}]])" class="btn btn-danger btn-xs">删除</a>
+								</td>								
+							</tr>
+						</tbody>
+					</table>
+					<div class="col-md-12 text-right">
+						<nav>
+						<ul class="pagination">
+							<li>
+								<p>当前
+									 <span th:text="${pageInfo.pageNum}">
+									 </span> 页,总 
+									 <span th:text="${pageInfo.pages}">
+									 </span> 页,共 
+									 <span th:text="${pageInfo.total}">
+									 </span> 条记录
+								 </p>
+							</li>
+							<li>
+								<a class="disabled" id="shouYe" th:href="@{/guanliyuan/xueShengXinXi.action(stuCode=${stuCode},banjiName=${banjiName},jiaoshiName=${jiaoshiName})}">
+								首页
+								</a>
+							</li>
+							<li>
+								<a th:href="@{/guanliyuan/xueShengXinXi.action(stuCode=${stuCode},banjiName=${banjiName},jiaoshiName=${jiaoshiName},page=${pageInfo.hasPreviousPage}?${pageInfo.prePage}:1)}">
+								上一页
+								</a>
+							</li>							
+							<li>
+								<a th:href="@{/guanliyuan/xueShengXinXi.action(stuCode=${stuCode},banjiName=${banjiName},jiaoshiName=${jiaoshiName},page=${pageInfo.hasNextPage}?${pageInfo.nextPage}:${pageInfo.pages})}">
+								下一页
+								</a>
+							</li>
+							<li>
+								<a class="disabled" th:href="@{/guanliyuan/xueShengXinXi.action(stuCode=${stuCode},banjiName=${banjiName},jiaoshiName=${jiaoshiName},page=${pageInfo.pages})}">
+								尾页
+								</a>
+							</li>
+						</ul>
+						</nav>
+					</div><!-- /.col-md-12 -->					
+				</div><!-- /.panel -->				
+			</div><!-- /.col-lg-12 -->			
+		</div><!-- /.row -->
+	</div><!-- 学生考勤查询  end-->	
+<!-- 修改学生信息模态框-- start -->
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="updateStuXinxi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="shuaXin()">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">修改学生信息</h4>
+           </div>
+           <div class="modal-body">
+		   	<form class="form-horizontal" id="fuDaoYuanXiuGaiXueShengXinXi">
+					<div class="form-group">
+						<label for="updateStuCode" class="col-sm-2 control-label">
+						 	学号:<input name="updateStuId" id="updateStuId" type="hidden"/>
+						</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="updateStuCode" placeholder="学号" name="updateStuCode" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateStuName" class="col-sm-2 control-label">
+						 	姓名:
+						</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="updateStuName" placeholder="姓名" name="updateStuName" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateStuIdentity" class="col-sm-2 control-label">
+							身份证号:
+						</label> 
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="updateStuIdentity" placeholder="身份证号" name="updateStuIdentity" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateStuXingBie" class="col-sm-2 control-label" style="float:left;padding:7px 15px 0 27px;">
+							性别:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="updateStuXingBie" name="updateStuXingBie">
+								<option>--请选择--</option>
+								<option value="男">男</option>
+								<option value="女">女</option>																																		
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateStuBanJiName" class="col-sm-2 control-label">
+							班级:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="updateStuBanJiName" name="updateStuBanJiName" onchange="updateSetFuDaoYuanName()">
+								<option selected="selected">--请选择--</option>
+								<option th:each="banji:${banJiAndFuDaoYuan}" th:value="${banji.banji_id}" th:text="${banji.banji_name}">								
+									
+								</option>																																		
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateStuFuDaoYuanName" class="col-sm-2 control-label">
+							辅导员:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="updateStuFuDaoYuanName" name="updateStuFuDaoYuanName" onchange="updateSetBanJiName()">
+								<option>--请选择--</option>
+								<option th:each="FuDaoYuan:${FuDaoYuanXinXi}" th:value="${FuDaoYuan.jiaoshi_id}" th:text="${FuDaoYuan.jiaoshi_name}">	
+								
+								</option>																																		
+							</select>
+						</div>
+																																									
+					</div>
+				</form>
+		   </div>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-default" data-dismiss="modal" onclick="shuaXin()">关闭</button>
+               <button type="button" class="btn btn-primary" onclick="queDingXiuGai()">确定</button>
+           </div>
+       </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal fade -->
+<!-- 修改学生信息模态框-- end -->
+<div th:each="item:${banJiAndFuDaoYuan}">
+	<input type="hidden" id="itemBanJiId" name="itemBanJiId" th:value="${item.banji_id}">
+	<input type="hidden" id="itemJiaoShiId" name="itemJiaoShiId" th:value="${item.banji_jiaoshi_id}">
+	<input type="hidden" id="itemBanJiName" name="itemBanJiName" th:value="${item.banji_name}"><br>
+</div>
+<!-- 新建学生信息模态框-- start -->
+<div class="modal fade" id="createStuXinxi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="shuaXin()">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">新增学生信息</h4>
+           </div>
+           <div class="modal-body">
+		   	<form class="form-horizontal" id="fuDaoYuanCreateXueShengXinXi">
+					<div class="form-group">
+						<label for="createStuCode" class="col-sm-2 control-label">
+							学号:
+						</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="createStuCode" placeholder="学号" name="createStuCode" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createStuName" class="col-sm-2 control-label">
+						 	姓名:
+						</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="createStuName" placeholder="姓名" name="createStuName" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createStuIdentity" class="col-sm-2 control-label">
+							身份证号:
+						</label> 
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="createStuIdentity" placeholder="身份证号" name="createStuIdentity" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createStuNianLing" class="col-sm-2 control-label">
+							年龄:
+						</label> 
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="createStuNianLing" placeholder="年龄" name="createStuNianLing" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createStuXingBie" class="col-sm-2 control-label" style="float:left;padding:7px 15px 0 27px;">
+							性别:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="createStuXingBie" name="createStuXingBie">
+								<option>--请选择--</option>
+								<option value="男">男</option>
+								<option value="女">女</option>																																		
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createStuBanJiName" class="col-sm-2 control-label">
+							班级:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="createStuBanJiName" name="createStuBanJiName" onchange="setFuDaoYuanName()">
+								<option>--请选择--</option>
+								<option th:each="banji:${banJiAndFuDaoYuan}" th:value="${banji.banji_id}" th:text="${banji.banji_name}">							
+								
+								</option>																																		
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createStuFuDaoYuanName" class="col-sm-2 control-label">
+							辅导员:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="createStuFuDaoYuanName" name="createStuFuDaoYuanName" onchange="setBanJiName()">
+								<option>--请选择--</option>
+								<option th:each="fuDaoYuan:${FuDaoYuanXinXi}" th:value="${fuDaoYuan.jiaoshi_id}" th:text="${fuDaoYuan.jiaoshi_name}">
+								
+								</option>																																		
+							</select>
+						</div>																																									
+					</div>
+				</form>
+		   </div>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-default" data-dismiss="modal" onclick="shuaXin()">关闭</button>
+               <button type="button" class="btn btn-primary" onclick="queDingXinZeng()">确定</button>
+           </div>
+       </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal fade -->
+<!-- 新建学生信息模态框-- end -->
+</body>
+</html>

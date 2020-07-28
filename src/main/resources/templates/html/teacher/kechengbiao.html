@@ -1,0 +1,139 @@
+<!DOCTYPE HTML>
+<html lang="ec" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<link href="/css/style.css" type="text/css" rel="stylesheet">
+<!-- 引入css样式文件 -->
+<link href="/css/bootstrap-theme.css" rel="stylesheet" />
+<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
+<link href="/css/bootstrap.css" rel="stylesheet"/>
+<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+<!--导入bootstrap.js包-->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<style type="text/css">
+.input-block-level{
+	border-top-right-radius: 5px; 
+	border-top-left-radius: 5px; 
+	border-bottom-right-radius:5px;
+	border-bottom-left-radius:5px;
+	border: 1px solid black;
+}
+.form-inline>div
+{
+	text-align: center;
+}
+.table thead tr th{
+	text-align: center;
+}
+.table tbody tr td{
+	text-align: center;
+}
+</style>
+</head>
+
+<script type="text/javascript">
+
+</script>
+<body>
+    <!-- 学生查询课程表  start-->
+	<div id="page-wrapper">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">&nbsp;&nbsp;&nbsp;&nbsp;课程表信息</h1>
+				<input id="msg" name="msg" type="hidden" value="${msg}"/>
+			</div>
+			<!-- /.col-lg-12 -->
+		</div>
+		<!-- /.row -->
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<form class="form-inline" method="post" id="form1" name="form1" 
+				      action="/jiaoshi/selectKeChengBiao.action">
+					<div class="form-group">
+						<label for="jiaoshiName">教师</label> 
+						<input type="text" class="input-block-level" id="jiaoshiName" 
+						                   th:value="${jiaoshiName}" name="jiaoshiName" />
+					</div>
+					<div class="form-group">
+						<label for="kechengName">课程</label> 
+						<input type="text" class="input-block-level" id="kechengName" 
+						                   th:value="${kechengName}" name="kechengName" />
+					</div>
+					<div class="form-group">
+						<label for="shangkeriqi">上课日期</label> 
+						<input type="text" class="input-block-level" id="shangkeriqi" 
+						                   th:value="${shangkeriqi}" name="shangkeriqi" />
+					</div>
+					<button type="submit" class="btn btn-primary">查询</button>
+				</form>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">课程表信息</div>
+					<!-- /.panel-heading -->
+					<table class="table table-bordered table-striped ">
+						<thead>
+							<tr>
+								<th>姓名</th>
+								<th>课程名称</th>
+								<th>教师名称</th>							
+								<th>班级</th>						
+								<th>上课日期</th>
+							</tr>
+						</thead>
+						<tbody th:each="fieldList:${pageInfo.list}">
+							<tr>
+								<td th:text="${fieldList.stu_name}"></td>
+								<td th:text="${fieldList.banji_name}"></td>
+								<td th:text="${fieldList.kecheng_name}"></td>
+								<td th:text="${fieldList.jiaoshi_name}"></td>
+								<td th:text="${fieldList.kechengbiao_shangkeriqi}"></td>								
+							</tr>
+						</tbody>
+					</table>
+					<div class="col-md-12 text-right">
+						<nav>
+						<ul class="pagination">
+							<li>
+								<p>当前
+									 <span th:text="${pageInfo.pageNum}">
+									 </span> 页,总 
+									 <span th:text="${pageInfo.pages}">
+									 </span> 页,共 
+									 <span th:text="${pageInfo.total}">
+									 </span> 条记录
+								 </p>
+							</li>
+							<li>
+								<a class="disabled" id="shouYe" th:href="@{/jiaoshi/selectKeChengBiao.action(jiaoshiName=${jiaoshiName},kechengName=${kechengName},shangkeriqi=${shangkeriqi})}">
+								首页
+								</a>
+							</li>
+							<li>
+								<a th:href="@{/jiaoshi/selectKeChengBiao.action(jiaoshiName=${jiaoshiName},kechengName=${kechengName},shangkeriqi=${shangkeriqi},pageNum=${pageInfo.hasPreviousPage}?${pageInfo.prePage}:1)}">
+								上一页
+								</a>
+							</li>							
+							<li>
+								<a th:href="@{/jiaoshi/selectKeChengBiao.action(jiaoshiName=${jiaoshiName},kechengName=${kechengName},shangkeriqi=${shangkeriqi},pageNum=${pageInfo.hasNextPage}?${pageInfo.nextPage}:${pageInfo.pages})}">
+								下一页
+								</a>
+							</li>
+							<li>
+								<a class="disabled" th:href="@{/jiaoshi/selectKeChengBiao.action(jiaoshiName=${jiaoshiName},kechengName=${kechengName},shangkeriqi=${shangkeriqi},pageNum=${pageInfo.pages})}">
+								尾页
+								</a>
+							</li>
+						</ul>
+					</nav>
+					</div><!-- /.col-md-12 -->					
+				</div><!-- /.panel -->				
+			</div><!-- /.col-lg-12 -->			
+		</div><!-- /.row -->
+	</div><!-- 学生查询课程表  end-->	
+</body>
+</html>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjt.dao.RoleDao">
+    <select id="findRoleByUserId" parameterType="String" resultType="com.hjt.pojo.Role">
+        select user_role.id as id,role.name as name
+        from role
+        inner join user_role on user_role.id=role.id
+        where user_role.u_id=#{stuId} and user_role.type=#{type}
+    </select>
+</mapper>

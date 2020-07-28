@@ -1,0 +1,375 @@
+<!DOCTYPE HTML>
+<html lang="ec" xmlns:th="http://www.thymeleaf.org">
+<head>
+<!-- 引入css样式文件 -->
+<!-- 引入css样式文件 -->
+<link href="/css/bootstrap-theme.css" rel="stylesheet" />
+<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
+<link href="/css/bootstrap.css" rel="stylesheet"/>
+<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+<!--导入bootstrap.js包-->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<title>客户管理</title>
+<style type="text/css">
+	body {
+	position:absolute;
+	z-index:100000000000000;
+    width: 80%;
+    margin-top:30px;
+    margin-bottom:30px;
+    margin-left:10%;
+    font-family: "Microsoft YaHei", sans-serif;
+ }
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover{
+     background-color: #222222;
+ }
+ .navbar-collapse{
+    padding-left: 5px;
+    padding-right: 5px;
+ }
+  .nav>li>a{
+     color:#444;
+     margin: 0 5px;
+ }
+ .dropdown-menu{
+     float: none;
+     min-width: 200px;
+     margin-left: 0;
+     background-color: #E3E3E3;
+     box-shadow: none;
+     text-align: center;
+ }
+  .dropdown-menu>li>a{
+     padding: 10px 15px;
+ }
+ .pageContainer{
+ 	width: 100%;
+ 	height: 700px;
+ 	overflow:no;
+ }
+  .pageSidebar{
+    width: 15%;
+    padding-bottom:30px;
+    height:100%;
+    float: left;
+    background-color: #e3e3e3;
+ }
+  .pageContent{
+	width: 85%;
+	height: 100%;
+	float: left;
+	overflow:no;
+ }
+.mainFrame
+{
+
+	width: 100%;
+	height: 100%;
+	overflow:scroll;
+	scrolling:no;
+}
+.splitter{
+	 position:absolute;
+	 z-index:0;
+     width: 5px;
+     height: 700px;
+     bottom: 0;
+     top:72px;
+     left: 15%;
+     position: absolute;
+     overflow: no;
+     background-color: #fff;
+ }
+ .footer {
+     width: 100%;
+     height: 30px;
+     line-height: 30px;
+     margin-top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     position: absolute;
+     z-index: 10;
+     background-color:#DFDFDF;
+ }
+ .nav>li
+ {
+ 	text-align: center;
+ }
+</style>
+<!-- overflow -->
+<!-- visible默认值。内容不会被修剪，会呈现在元素框之外。 -->
+<!-- hidden内容会被修剪，并且其余内容是不可见的。 -->
+<!-- scroll内容会被修剪，但是浏览器会显示滚动条以便查看其余的内容。 -->
+<!-- auto如果内容被修剪，则浏览器会显示滚动条以便查看其余的内容。 -->
+<!-- inherit规定应该从父元素继承 overflow 属性的值。 -->
+<!--  position -->
+<!--  absolute生成绝对定位的元素，相对于 static 定位以外的第一个父元素进行定位。元素的位置通过 "left", "top", "right" 以及 "bottom" 属性进行规定 -->
+<!--  fixed生成绝对定位的元素，相对于浏览器窗口进行定位。元素的位置通过 "left", "top", "right" 以及 "bottom" 属性进行规定。 -->
+<!--  relative生成相对定位的元素，相对于其正常位置进行定位。因此，"left:20" 会向元素的 LEFT 位置添加 20 像素。 -->
+<!--  static默认值。没有定位，元素出现在正常的流中（忽略 top, bottom, left, right 或者 z-index 声明）。 -->
+<!--  inherit规定应该从父元素继承 position 属性的值。 -->
+</head>
+
+<body style="background-image: url('../images/bodyTuPian-5.jpg'); background-size:100%;background-repeat:no-repeat;opacity:0.8; " >
+<div id="body" class="body">
+<!-- 导航栏按钮部分 -->
+	<nav class="navbar navbar-inverse">
+	    <div class="container-fluid ">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">学生考勤管理系统 v2.0</a>
+			</div>
+	       <div class="collapse navbar-collapse " id="header">
+	           <ul class="nav navbar-nav navbar-right ">
+	               <li role="presentation">
+	                   <a href="#">当前用户：<span class="badge" th:text="${student}"></span>
+	                   </a>
+	               </li>
+	               <li role="presentation">
+	                   <a href="#">用户类型：<span class="badge" th:text="${msg}"></span>
+	                   </a>
+	               </li>
+	               <!-- 下拉框菜单开始 -->
+             		<li class="dropdown">
+                 		<a class="dropdown-toggle" data-toggle="dropdown" href="nav4.html" target="mainFrame">
+                     	个人设置<span class="caret"></span>
+                 		</a>
+                 		<ul class="dropdown-menu">
+                     		<li>
+                         	<a href="#" data-toggle="modal" data-target="#xiugaimima">修改密码</a>
+                     		</li>
+                     		<li>
+                         	<a @click="getGerenxinxi" data-toggle="modal" data-target="#gerenxinxi" class="">个人信息</a>
+                     		</li>
+                 		</ul>
+             		</li>
+             		<!-- 下拉框菜单开始结束 -->
+	               <li>
+	                   <a @click="panduanshifoutuichu"><span class="glyphicon glyphicon-lock"></span>退出登录</a>
+	                </li>
+	            </ul>
+	       </div>
+	    </div>
+	</nav>
+	<!-- 中间正文部分（左侧导航栏+右侧iframe） -->
+	<div class="pageContainer">
+	     <!-- 左侧导航栏 -->
+	     <div class="pageSidebar">
+	         <ul class="nav nav-stacked nav-pills">
+					<br/><br/>
+	             <li role="presentation">
+	                 <a href="/student/kaoQinXinXi.action" target="mainFrame">考勤信息</a>
+	             </li>
+	             <li role="presentation">
+	                 <a href="/student/qingJiaXinXi.action" target="mainFrame">请假信息</a>
+	             </li>
+	             <li role="presentation">
+	                 <a href="/student/tostudentqingjia.action" target="mainFrame">在线请假</a>
+	             </li>
+	             <li role="presentation">
+	                 <a href="/student/selectKeChengBiao.action" target="mainFrame">课程表</a>
+	             </li>
+	             <li role="presentation">
+	                 <a href="/student/selectGongGaoXinXi.action" target="mainFrame">最新公告</a>
+	             </li>
+	         </ul>
+	     </div>
+			<!-- 左侧导航和正文内容的分隔线 -->
+	     <div class="splitter"></div>
+	     <!-- 正文内容部分 -->
+	     <div class="pageContent">
+	       <iframe id="mainFrame" name="mainFrame" class="mainFrame"
+	       frameborder="0" scrolling="no">
+	       </iframe>
+	     </div>
+	 </div>
+	<!-- 修改密码模态框 -->
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="xiugaimima" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog" >
+	       <div class="modal-content">
+	           <div class="modal-header">
+	               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	               <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+	           </div>
+	           <div class="modal-body">
+			   	<form class="form-horizontal" id="update_stu_mima">
+						<div class="form-group">
+							<label for="update_stuIdentity" class="col-sm-2 control-label">
+							 	身份证号:
+							</label>
+							<div class="col-sm-10">
+								<input ref="update_stuIdentity" type="text" class="form-control" id="update_stuIdentity" placeholder="身份证号码" name="update_stuIdentity" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="update_stuPwd" class="col-sm-2 control-label">
+								新密码:
+							</label>
+							<div class="col-sm-10">
+								<input ref="update_stuPwd" type="password" class="form-control" id="update_stuPwd" placeholder="新密码" name="update_stuPwd" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="update_stuPwdTwo" class="col-sm-2 control-label">
+								确认密码:
+							</label>
+							<div class="col-sm-10">
+								<input ref="update_stuPwdTwo" type="password" class="form-control" id="update_stuPwdTwo" placeholder="确认密码" name="update_stuPwdTwo" />
+							</div>
+						</div>
+					</form>
+			   </div>
+	           <div class="modal-footer">
+	               <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	               <button type="button" class="btn btn-primary" @click="quedingxiugai">确定</button>
+	           </div>
+	       </div><!-- /.modal-content -->
+	   </div><!-- /.modal-dialog -->
+	</div><!-- 修改密码 end/.modal fade -->
+
+
+	<!-- 个人信息模态框 -->
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="gerenxinxi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog">
+	       <div class="modal-content">
+	           <div class="modal-header">
+	               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	               <h4 class="modal-title">个人信息</h4>
+	           </div>
+	           <div class="modal-body" style="height: 300px;" id="modal-body">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label for="stuName" class="col-sm-2 control-label">
+							 	姓名:
+							</label>
+							<div class="col-sm-10">
+								<input :value="studentInfo.stu_name" type="text" id="stuName" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="stuCode" class="col-sm-2 control-label">
+								学号:
+							</label>
+							<div class="col-sm-10">
+								<input :value="studentInfo.stu_code" type="text" id="stuCode" readonly="readonly" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="stuIdentity" class="col-sm-2 control-label">
+								身份证:
+							</label>
+							<div class="col-sm-10">
+								<input :value="studentInfo.stu_identity" type="text" id="stuIdentity" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="stuShifoudongjie" class="col-sm-2 control-label">
+								账号状态:
+							</label>
+							<div class="col-sm-10">
+								<input :value="studentInfo.stu_shifoudongjie" type="text" id="stuShifoudongjie" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="banjiName" class="col-sm-2 control-label">
+								班级:
+							</label>
+							<div class="col-sm-10">
+								<input :value="studentInfo.banji_name" type="text" id="banjiName" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="stuXingbie" class="col-sm-2 control-label">
+								性别:
+							</label>
+							<div class="col-sm-10">
+								<input :value="studentInfo.stu_xingbie" type="text" id="stuXingbie" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="stuNianling"  class="col-sm-2 control-label">
+								年龄:
+							</label>
+							<div class="col-sm-10">
+								<input :value="studentInfo.stu_nianling" type="text" id="stuNianling" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+
+					</form>
+			   </div>
+	           <div class="modal-footer">
+	               <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	           </div>
+	       </div><!-- /.modal-content -->
+	   </div><!-- /.modal-dialog -->
+	</div><!-- 个人信息模态框 end/.modal fade -->
+</div>
+</body>
+<script type="text/javascript">
+
+	var vm1 = new Vue({
+		el:"#body",
+		data: {
+		    //个人信息
+            studentInfo:[],
+            //修改密码
+            update_stuIdentity:"",
+            update_stuPwd:"",
+            update_stuPwdTwo:"",
+		},
+		methods:{
+			getGerenxinxi:function() {
+				this.$http.get('http://localhost:8080/student/gerenxinxi.action').then(
+                    (res) =>{
+                        if (res.data.stu_shifoudongjie==0) {
+                            res.data.stu_shifoudongjie="正常";
+                        }
+                        else {
+                            this.stuShifoudongjie="哈哈";
+                        }
+                        this.studentInfo=res.data;
+                        console.log(this.studentInfo.stu_name);
+                    }
+                );
+			},
+            //修改密码
+            quedingxiugai:function () {
+                axios({
+                    method:'get',
+                    url: '/student/updateStuMiMa.action',
+                    params:{update_stuIdentity:this.$refs.update_stuIdentity.value,update_stuPwd:this.$refs.update_stuPwd.value,update_stuPwdTwo:this.$refs.update_stuPwdTwo.value},
+                }).then(function (res) {
+                    alert(res.data);
+                    if(res.data =="OK")
+                    {
+                        alert("用户修改成功,请重新登录");
+                        window.location.href = "/";
+                    }
+                    if(res.data =="FALL")
+                    {
+                        alert("修改密码失败，请重试");
+                    }
+                });
+            },
+            panduanshifoutuichu:function () {
+			    alert("退出");
+                if(confirm('确定要退出?'))
+                {
+                    axios({
+                        method:'get',
+                        url: '/logout.action',
+                    }).then(function (res) {
+                        window.location.href = "/";
+                    });
+                }
+            }
+		}
+	});
+ </script>
+</html>

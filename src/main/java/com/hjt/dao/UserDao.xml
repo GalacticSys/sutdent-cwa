@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjt.dao.UserDao">
+	<!-- 根据学号查询学生 -->
+	<select id="findStudentByCode" parameterType="String" resultType="com.hjt.pojo.Student">
+		SELECT * FROM t_student WHERE stu_code = #{stuCode}
+	</select>
+	<!-- 根据学号、密码查询学生 -->
+	<select id="findStudent" parameterType="String" resultType="com.hjt.pojo.Student">
+		SELECT * FROM t_student WHERE stu_code = #{stuCode} AND stu_pwd = #{password}
+	</select>
+	<!-- 根据学号冻结学生账户 -->
+	<update id="updateStudentShifoudongjie" parameterType="String">
+		update t_student set stu_shifoudongjie = #{shiFouDongJie} where stu_code = #{stuCode}
+	</update>
+	<!-- 根据学号重置密码 -->
+	<update id="updateStudentMima" parameterType="String">
+		update t_student set stu_pwd=#{new_pwd},stu_shifoudongjie='0' where stu_code=#{new_stuCode}
+	</update>
+
+	<sql id="findTeacherByIdWhere">
+		<where>
+			<if test="teaCode != null and teaCode != ''">
+				jiaoshi_code = #{teaCode}
+			</if>
+			<if test="jiaoShi != null and jiaoShi != ''">
+				AND jiaoshi_fudaoyuan=#{jiaoShi}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 根据教师code、是否为辅导员查询教师 -->
+	<select id="findTeacherByCode" parameterType="String" resultType="com.hjt.pojo.JiaoShi">
+		SELECT * FROM t_jiaoshi
+		<include refid="findTeacherByIdWhere"></include>
+	</select>
+	<!-- 根据教师code、密码查询教师 -->
+	<select id="findTeacher" parameterType="String" resultType="com.hjt.pojo.JiaoShi">
+		SELECT * FROM t_jiaoshi WHERE jiaoshi_code = #{teaCode} AND jiaoshi_pwd = #{password}
+	</select>
+
+	<!-- 根据教师编号冻结教师账户 -->
+	<update id="updateTeacherShifoudongjie" parameterType="String">
+		update t_jiaoshi set jiaoshi_shifoudongjie = #{jiaoshiShifoudongjie} where jiaoshi_code = #{teaCode}
+	</update>
+
+	<!-- 根据教师编号重置密码 -->
+	<update id="updateTeachertMima" parameterType="String">
+		update t_jiaoshi set jiaoshi_pwd=#{jiaoshiPwd},jiaoshi_shifoudongjie='0' where jiaoshi_code=#{jiaoshiCode}
+	</update>
+
+
+
+	<!-- 根据管理员code查询管理员 -->
+	<select id="findGuanLiYuanByCode" parameterType="String" resultType="com.hjt.pojo.GuanLiYuan">
+		select * from t_guanliyuan where guanliyuan_code=#{guanLiYuanCode}
+	</select>
+
+	<!-- 根据管理员code、password查询管理员 -->
+	<select id="findGuanLiYuan" parameterType="String" resultType="com.hjt.pojo.GuanLiYuan">
+		select * from t_guanliyuan where guanliyuan_code=#{guanLiYuanCode} and guanliyuan_pwd=#{password}
+	</select>
+</mapper>

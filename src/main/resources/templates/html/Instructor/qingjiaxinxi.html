@@ -1,0 +1,274 @@
+<!DOCTYPE HTML>
+<html lang="ec" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<link href="../css/style.css" type="text/css" rel="stylesheet">
+<!-- 引入css样式文件 -->
+<link href="../css/bootstrap-theme.css" rel="stylesheet" />
+<link href="../css/bootstrap-theme.min.css" rel="stylesheet"/>
+<link href="../css/bootstrap.css" rel="stylesheet"/>
+<link href="../css/bootstrap.min.css" rel="stylesheet"/>
+<!--导入bootstrap.js包-->
+<script src="../js/jquery-1.11.3.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<style type="text/css">
+.input-block-level{
+	border-top-right-radius: 5px; 
+	border-top-left-radius: 5px; 
+	border-bottom-right-radius:5px;
+	border-bottom-left-radius:5px;
+	border: 1px solid black;
+}
+.form-inline>div
+{
+	text-align: center;
+}
+.table thead tr th{
+	text-align: center;
+}
+.table tbody tr td{
+	text-align: center;
+}
+</style>
+</head>
+
+<script type="text/javascript">
+</script>
+<body>
+    <!-- 学生考勤查询  start-->
+	<div id="page-wrapper">
+		<div class="row">
+			<div class="col-lg-12">
+				&nbsp;&nbsp;&nbsp;&nbsp;<h1 class="page-header">请假信息</h1>
+			</div>
+			<!-- /.col-lg-12 -->
+		</div>
+		<!-- /.row -->
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<form class="form-inline" method="post" id="form1" name="form1" 
+				      action="/fudaoyuan/qingJiaXinXi.action">
+					<div class="form-group">
+						<label for="stuCode">学号</label> 
+						<input type="text" class="input-block-level" id="stuCode" 
+						                   th:value="${stuCode}" name="stuCode" />
+					</div>
+					<div class="form-group">
+						<label for="kechengName">课程</label> 
+						<input type="text" class="input-block-level" id="kechengName" 
+						                   th:value="${kechengName}" name="kechengName" />
+					</div>
+					<div class="form-group">
+						<label for="kaoqinRiqi">日期</label>
+						<input type="text" class="input-block-level" id="kaoqinRiqi" 
+						                   th:value="${kaoqinRiqi}" name="kaoqinRiqi" />
+					</div>
+					<button type="submit" class="btn btn-primary">查询</button>
+				</form>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">请假信息列表<input id="inputqingjiaId" type="hidden" name="inputqingjiaId"/><input id="inputqingjiaXuanKeId" name="inputqingjiaXuanKeId" type="hidden"/></div>
+					<!-- /.panel-heading -->
+					<table class="table table-bordered table-striped ">
+						<thead>
+							<tr>
+								<th>学号</th>
+								<th>姓名</th>
+								<th>课程</th>
+								<th>班级</th>								
+								<th>是否批假</th>
+								<th>授课教师</th>
+								<th>请假时间</th>
+								<th>请假原因</th>
+								<th>是否审批</th>					
+								<th>请假日期</th>
+							</tr>
+						</thead>
+						<tbody th:each="fieldList:${pageInfo.list}">
+								<tr>
+									<td th:text="${fieldList.stu_code}"></td>
+									<td th:text="${fieldList.stu_name}"></td>
+									<td th:text="${fieldList.kecheng_name}"></td>
+									<td th:text="${fieldList.banji_name}"></td>
+									<td th:switch="${fieldList.qingjia_shifoupiyue}">
+										<span th:case="0">
+											<span th:switch="${fieldList.qingjia_shifoupijia}">
+												<span th:case="1">未批假</span>
+												<span th:case="0">已批假</span>
+											</span>	
+										</span>
+										<span th:case="1">
+										
+										</span>
+									</td>
+									<td th:text="${fieldList.jiaoshi_name}"></td>
+									<td th:text="${fieldList.qingjia_shijian}"></td>
+									<td th:text="${fieldList.qingjia_yuanyin}"></td>
+									<td th:switch="${fieldList.qingjia_shifoupiyue}">
+										<a class="btn btn-primary" th:case="1" href="#"  data-toggle="modal" data-target="#fudaoyuanpiyueqingjia" th:onclick="getqingjiaId([[${fieldList.qingjia_id}]])">未审批</a>
+										<span th:case="0">已审批</span>
+									</td>
+									<td th:text="${fieldList.qingjia_riqi}"></td>									
+								</tr>
+						</tbody>
+					</table>
+					<div class="col-md-12 text-right">
+					<nav>
+						<ul class="pagination">
+							<li>
+								<p>当前
+									 <span th:text="${pageInfo.pageNum}">
+									 </span> 页,总 
+									 <span th:text="${pageInfo.pages}">
+									 </span> 页,共 
+									 <span th:text="${pageInfo.total}">
+									 </span> 条记录
+								 </p>
+							</li>
+							<li>
+								<a class="disabled" id="shouYe" th:href="@{/fudaoyuan/qingJiaXinXi.action(stuCode=${stuCode},kechengName=${kechengName},kaoqinRiqi=${kaoqinRiqi})}">
+								首页
+								</a>
+							</li>
+							<li>
+								<a th:href="@{/fudaoyuan/qingJiaXinXi.action(stuCode=${stuCode},kechengName=${kechengName},kaoqinRiqi=${kaoqinRiqi},pageNum=${pageInfo.hasPreviousPage}?${pageInfo.prePage}:1)}">
+								上一页
+								</a>
+							</li>							
+							<li>
+								<a th:href="@{/fudaoyuan/qingJiaXinXi.action(stuCode=${stuCode},kechengName=${kechengName},kaoqinRiqi=${kaoqinRiqi},pageNum=${pageInfo.hasNextPage}?${pageInfo.nextPage}:${pageInfo.pages})}">
+								下一页
+								</a>
+							</li>
+							<li>
+								<a class="disabled" th:href="@{/fudaoyuan/qingJiaXinXi.action(stuCode=${stuCode},kechengName=${kechengName},kaoqinRiqi=${kaoqinRiqi},pageNum=${pageInfo.pages})}">
+								尾页
+								</a>
+							</li>
+						</ul>
+					</nav>  
+					</div><!-- /.col-md-12 -->					
+				</div><!-- /.panel -->				
+			</div><!-- /.col-lg-12 -->			
+		</div><!-- /.row -->
+	</div><!-- 学生考勤查询  end-->
+<!-- 辅导员审批学生请假信息模态框--start -->
+<div class="modal fade" id="fudaoyuanpiyueqingjia" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog" >
+	       <div class="modal-content">
+	           <div class="modal-header">
+	               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	               <h4 class="modal-title" id="myModalLabel">审批学生请假信息</h4>
+	           </div>
+	           <div class="modal-body">
+			   	<form class="form-horizontal" id="fudaoyuanshenpi" style="padding-left: 35%;">
+						<div class="form-group">
+							<label for="tongyi" class="col-sm-2" style="width: 30%;">
+							 	同意&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="tongyi"value="tongyi" onclick="choose(this)" name="shifoutongyi"/>
+							</label>
+																				
+						</div>	
+						<div class="form-group">
+							<label for="butongyi" class="col-sm-2" style="width: 30%;">
+							 	不同意&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="butongyi" value="butongyi" onclick="choose(this)" name="shifoutongyi"/>
+							</label>
+																		
+						</div>				
+					</form>
+			   </div>
+	           <div class="modal-footer">
+	               <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	               <button type="button" class="btn btn-primary" onclick="fuDaoYuanPiYue()">确定</button>
+	           </div>
+	       </div><!-- /.modal-content -->
+	   </div><!-- /.modal-dialog -->
+	</div><!-- <!-- 辅导员审批学生请假信息模态框--end/.modal fade -->
+</body>
+<script type="text/javascript">
+//辅导员审批请假只能选择一个方法 start
+function choose(obj){
+
+	  var ss= document.getElementsByName("shifoutongyi");
+
+	  for (var i = 0; i < ss.length; i++) {
+
+	   ss[i].checked = false;
+
+	  }
+
+	  obj.checked = true;
+
+	 }
+//辅导员审批请假只能选择一个方法 end
+
+
+//辅导员审批时，获取该学生的请假id、值 start
+function getqingjiaId(qingjiaId)
+{
+	alert(qingjiaId);
+	$("#inputqingjiaId").val(qingjiaId);
+	$("#inputqingjiaXuanKeId").val(qingjiaXuanKeId);
+}
+//辅导员审批时，获取该学生的id值 end
+
+//辅导员批假请求start
+function fuDaoYuanPiYue() 
+{	
+	var ss= document.getElementsByName('shifoutongyi');
+	var qingjiaId= $("#inputqingjiaId").val();
+	var qingjiaXuanKeId=$("#inputqingjiaXuanKeId").val();
+	for(var i=0;i<ss.length;i++)
+	{
+		if(ss[i].checked)
+		{
+			var shenpixinxi=ss[i].value;
+			$.ajax({
+				asyc:false,
+				type:"post",
+				cache:false,
+				url:"/fudaoyuan/shifoutongyi.action",
+				data:{shenpixinxi:shenpixinxi,qingjiaId:qingjiaId,qingjiaXuanKeId:qingjiaXuanKeId},
+				dataType:"text",
+				success:function (data) {
+					if(data=='OK')
+					{
+						alert("同意该学生请假");
+						location.reload();
+					}
+					if(data=='NotOK')
+					{
+						alert("不同意该学生请假");
+						location.reload();
+					}
+					if(data=='FALL')
+					{
+						alert("操作出现异常，请重试。");
+						windows.location();
+					}
+				},
+				error:function(e)
+				{
+					alert("error");
+				}
+			})
+		}
+		if(ss[ss.length-1].checked || ss[ss.length-2].checked)
+		{
+			
+		}
+		else			
+		{
+			alert("请批阅该请假信息");
+			return;
+		}
+	}
+	
+}
+//辅导员批假请求end
+</script>
+</html>

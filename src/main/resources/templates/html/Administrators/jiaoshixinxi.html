@@ -1,0 +1,421 @@
+<!DOCTYPE HTML>
+<html lang="ec" xmlns:th="http://www.thymeleaf.org">
+<head>
+<!-- 引入css样式文件 -->
+<!-- 引入css样式文件 -->
+<link href="/css/bootstrap-theme.css" rel="stylesheet" />
+<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
+<link href="/css/bootstrap.css" rel="stylesheet"/>
+<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+<!--导入bootstrap.js包-->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<style type="text/css">
+.input-block-level{
+	border-top-right-radius: 5px; 
+	border-top-left-radius: 5px; 
+	border-bottom-right-radius:5px;
+	border-bottom-left-radius:5px;
+	border: 1px solid black;
+}
+.form-inline>div
+{
+	text-align: center;
+}
+.table thead tr th{
+	text-align: center;
+}
+.table tbody tr td{
+	text-align: center;
+}
+</style>
+</head>
+<body>
+    <!-- 教师信息查询  start-->
+	<div id="page-wrapper">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">&nbsp;&nbsp;&nbsp;&nbsp;教师信息</h1>
+			</div>
+			<!-- /.col-lg-12 -->
+		</div>
+		<!-- /.row -->
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<form class="form-inline" method="post" id="form1" name="form1" 
+				      action="/guanliyuan/jiaoShiXinXi.action">
+					<div class="form-group">
+						<label for="teaCode">编号</label> 
+						<input type="text" class="input-block-level" id="teaCode" 
+						                   th:value="${teaCode }" name="teaCode" />
+					</div>
+					<div class="form-group">
+						<label for="jiaoShiName">姓名</label> 
+						<input type="text" class="input-block-level" id="jiaoShiName" 
+						                   th:value="${jiaoShiName}" name="jiaoShiName" />
+					</div>
+					<div class="form-group">
+						<label for="jiaoShiLeiBie">
+							教师类别
+						</label> 
+						<select id="jiaoShiLeiBie" name="jiaoShiLeiBie" class="form-control">
+							<option value="2">--请选择--</option>
+							<option value="0">教师</option>
+							<option value="1">辅导员</option>
+						</select>
+					</div>
+					<button type="submit" class="btn btn-primary">查询</button>
+				</form>
+			</div>
+		</div>	
+		<a href="#" class="btn btn-primary" data-toggle="modal"  style="margin-left: 8px;"
+		           data-target="#createTeaXinxi" >新建</a>	
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">教师信息列表</div>
+					<!-- /.panel-heading -->
+					<table class="table table-bordered table-striped ">
+						<thead>
+							<tr>
+								<th>编号</th>
+								<th>姓名</th>
+								<th>性别</th>
+								<th>年龄</th>							
+								<th>身份证号</th>						
+								<th>教师类型</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody th:each="fieldList:${pageInfo.list}">							
+							<tr>
+								<td th:text="${fieldList.jiaoshi_code}"></td>
+								<td th:text="${fieldList.jiaoshi_name}"></td>
+								<td th:text="${fieldList.jiaoshi_xingbie}"></td>
+								<td th:text="${fieldList.jiaoshi_nianling}"></td>
+								<td th:text="${fieldList.jiaoshi_identity}"></td>
+								<td th:switch="${fieldList.jiaoshi_fudaoyuan}">
+									<span th:case="0">教师</span>
+									<span th:case="1">辅导员</span>
+								</td>	
+								<td>
+									<a th:onclick="updateTeaXinXi([[${fieldList.jiaoshi_id}]])" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#updateTeaXinxi">修改</a>
+									<a th:onclick="deleteStuXinXi([[${fieldList.jiaoshi_id}]])" class="btn btn-danger btn-xs">删除</a>
+								</td>								
+							</tr>
+						</tbody>
+					</table>
+					<div class="col-md-12 text-right">
+						<nav>
+							<ul class="pagination">
+								<li>
+									<p>当前
+										 <span th:text="${pageInfo.pageNum}">
+										 </span> 页,总 
+										 <span th:text="${pageInfo.pages}">
+										 </span> 页,共 
+										 <span th:text="${pageInfo.total}">
+										 </span> 条记录
+									 </p>
+								</li>
+								<li>
+									<a class="disabled" id="shouYe" th:href="@{/guanliyuan/jiaoShiXinXi.action(teaCode=${teaCode},jiaoShiName=${jiaoShiName},jiaoShiLeiBie=${jiaoShiLeiBie})}">
+									首页
+									</a>
+								</li>
+								<li>
+									<a th:href="@{/guanliyuan/jiaoShiXinXi.action(teaCode=${teaCode},jiaoShiName=${jiaoShiName},jiaoShiLeiBie=${jiaoShiLeiBie},page=${pageInfo.hasPreviousPage}?${pageInfo.prePage}:1)}">
+									上一页
+									</a>
+								</li>							
+								<li>
+									<a th:href="@{/guanliyuan/jiaoShiXinXi.action(teaCode=${teaCode},jiaoShiName=${jiaoShiName},jiaoShiLeiBie=${jiaoShiLeiBie},page=${pageInfo.hasNextPage}?${pageInfo.nextPage}:${pageInfo.pages})}">
+									下一页
+									</a>
+								</li>
+								<li>
+									<a class="disabled" th:href="@{/guanliyuan/jiaoShiXinXi.action(teaCode=${teaCode},jiaoShiName=${jiaoShiName},jiaoShiLeiBie=${jiaoShiLeiBie},page=${pageInfo.pages})}">
+									尾页
+									</a>
+								</li>
+							</ul>
+						</nav>
+					</div><!-- /.col-md-12 -->					
+				</div><!-- /.panel -->				
+			</div><!-- /.col-lg-12 -->			
+		</div><!-- /.row -->
+	</div><!-- 学生考勤查询  end-->	
+<!-- 修改教师信息模态框-- start -->
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="updateTeaXinxi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">修改教师信息</h4>
+           </div>
+           <div class="modal-body">
+		   	<form class="form-horizontal" id="fuDaoYuanXiuGaiJiaoShiXinXi">
+					<div class="form-group">
+						<label for="updateTeaCode" class="col-sm-2 control-label">
+						 	编号:<input name="updateTeaId" id="updateTeaId" type="hidden"/>
+						</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="updateTeaCode" placeholder="编号" name="updateTeaCode" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateTeaName" class="col-sm-2 control-label">
+						 	姓名:
+						</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="updateTeaName" placeholder="姓名" name="updateTeaName" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateTeaIdentity" class="col-sm-2 control-label">
+							身份证号:
+						</label> 
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="updateTeaIdentity" placeholder="身份证号" name="updateTeaIdentity" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateTeaNianLing" class="col-sm-2 control-label">
+							年龄:
+						</label> 
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="updateTeaNianLing" placeholder="年龄" name="updateTeaNianLing" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateTeaXingBie" class="col-sm-2 control-label" style="float:left;padding:7px 15px 0 27px;">
+							性别:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="updateTeaXingBie" name="updateTeaXingBie">
+								<option>--请选择--</option>
+								<option value="男">男</option>
+								<option value="女">女</option>																																		
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="updateTeaFuDaoYuan" class="col-sm-2 control-label">
+							教师类型:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="updateTeaFuDaoYuan" name="updateTeaFuDaoYuan">
+								<option>--请选择--</option>							
+								<option value="0">教师</option>
+								<option value="1">辅导员</option>																																
+							</select>
+						</div>
+					</div>
+				</form>
+		   </div>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+               <button type="button" class="btn btn-primary" onclick="queDingXiuGai()">确定</button>
+           </div>
+       </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal fade -->
+<!-- 修改学生信息模态框-- end -->
+<!-- 新建教师信息模态框-- start -->
+<div class="modal fade" id="createTeaXinxi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">新建教师信息</h4>
+           </div>
+           <div class="modal-body">
+		   	<form class="form-horizontal" id="fuDaoYuanXinZengJiaoShiXinXi">
+					<div class="form-group">
+						<label for="createTeaCode" class="col-sm-2 control-label">
+						 	编号:
+						</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="createTeaCode" placeholder="编号" name="createTeaCode" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createTeaName" class="col-sm-2 control-label">
+						 	姓名:
+						</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="createTeaName" placeholder="姓名" name="createTeaName" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createTeaIdentity" class="col-sm-2 control-label">
+							身份证号:
+						</label> 
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="createTeaIdentity" placeholder="身份证号" name="createTeaIdentity" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createTeaNianLing" class="col-sm-2 control-label">
+							年龄:
+						</label> 
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="createTeaNianLing" placeholder="年龄" name="createTeaNianLing" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createTeaXingBie" class="col-sm-2 control-label" style="float:left;padding:7px 15px 0 27px;">
+							性别:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="createTeaXingBie" name="createTeaXingBie">
+								<option>--请选择--</option>
+								<option value="男">男</option>
+								<option value="女">女</option>																																		
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="createTeaFuDaoYuan" class="col-sm-2 control-label">
+							教师类型:
+						</label> 
+						<div class="col-sm-10">
+							<select class="form-control" id="createTeaFuDaoYuan" name="createTeaFuDaoYuan">
+								<option>--请选择--</option>							
+								<option value="0">教师</option>
+								<option value="1">辅导员</option>																																
+							</select>
+						</div>
+					</div>
+				</form>
+		   </div>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+               <button type="button" class="btn btn-primary" onclick="queDingXinZeng()">确定</button>
+           </div>
+       </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal fade -->
+<!-- 新建教师信息模态框-- end -->
+</body>
+<script type="text/javascript">
+//将要修改的教师信息放到修改教师信息模态框里
+function updateTeaXinXi(teaId)
+{
+	$.ajax({
+		asyc:false,
+		cache:false,
+		type:"post",
+		data:{teaId:teaId},
+		url:"/guanliyuan/getTeaXinXiById.action",
+		dataType:"json",
+		success:function(data)
+		{
+			alert(data.jiaoshi_code);
+			$("#updateTeaId").val(data.jiaoshi_id);
+			$("#updateTeaCode").val(data.jiaoshi_code);
+			$("#updateTeaName").val(data.jiaoshi_name);
+			$("#updateTeaIdentity").val(data.jiaoshi_identity);
+			$("#updateTeaNianLing").val(data.jiaoshi_nianling);		
+			$("#updateTeaXingBie").val(data.jiaoshi_xingbie);
+			$("#updateTeaFuDaoYuan").val(data.jiaoshi_fudaoyuan);
+		},
+		error:function(e)
+		{
+			alert("error");
+		}
+		
+	})
+}
+function queDingXiuGai()
+{
+	var xiuGaiTeaXinXiFormData = $("#fuDaoYuanXiuGaiJiaoShiXinXi").serialize();
+	$.ajax({
+		asyc:false,
+		cache:false,
+		type:"post",
+		data:xiuGaiTeaXinXiFormData,
+		url:"/guanliyuan/xiuGaiTeaXinXi.action",
+		dataType:"text",
+		success:function(data)
+		{
+			if(data=="OK")
+			{
+				alert("修改成功");
+				window.location.reload();
+			}
+			if(data=="FALL")
+			{
+				alert("修改失败，请重试");
+			}
+		},
+		error:function(e)
+		{
+			alert("error");
+		}
+	})
+}
+//辅导员新增教师信息
+function queDingXinZeng()
+{
+	var createTeacherXinXiFromData = $("#fuDaoYuanXinZengJiaoShiXinXi").serialize();	
+	$.ajax({
+		asyc:false,
+		cache:false,
+		type:"post",
+		data:createTeacherXinXiFromData,
+		url:"/guanliyuan/XinZengTeaXinXi.action",
+		dataType:"text",
+		success:function(data)
+		{
+			if(data=="OK")
+			{
+				alert("新增成功");
+				window.location.reload();
+			}
+			if(data=="FALL")
+			{
+				alert("新增失败，请重试");
+			}
+		},
+		error:function(e)
+		{
+			alert("error");
+		}
+	})
+}
+//管理员删除教师信息
+function deleteStuXinXi(teaId)
+{
+	if(confirm('确定要删除?'))
+	{
+		$.ajax({
+			asyc:false,
+			cache:false,
+			type:"post",
+			data:{teaId:teaId},
+			url:"/guanliyuan/deleteTeaXinXi.action",
+			dataType:"text",
+			success:function(data)
+			{
+				if(data=="OK")
+				{
+					alert("删除成功");
+					window.location.reload();
+				}
+				if(data=="FALL")
+				{
+					alert("删除失败，请重试");
+				}
+			},
+			error: function(e)
+			{
+				alert("error");
+			}
+		})
+	}
+}
+
+</script>
+</html>

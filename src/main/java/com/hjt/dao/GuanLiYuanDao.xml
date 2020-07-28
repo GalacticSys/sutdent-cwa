@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjt.dao.GuanLiYuanDao">
+	<!-- 管理员修改密码 -->
+	<update id="updateGuanLiYuanMiMa" parameterType="String">
+		update t_guanliyuan set guanliyuan_pwd=#{updateGuanLiYuanPwd} where guanliyuan_identity=#{updateGuanLiYuanIdentity}
+	</update>
+
+	<!-- 管理员查看个人信息 -->
+	<select id="selectGeRenXinXiByCode" parameterType="String" resultType="com.hjt.pojo.GuanLiYuan">
+		select * from t_guanliyuan where guanliyuan_code=#{guanLiYuanCode}
+	</select>
+
+
+	<sql id="selectXueShengXinXiListWhere">
+		<where>
+			<if test="stu_code != null">
+				and stu_code=#{stu_code}
+			</if>
+			<if test="banji_name != null">
+				and banji_name=#{banji_name}
+			</if>
+			<if test="jiaoshi_name != null">
+				and jiaoshi_name=#{jiaoshi_name}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 管理员查看学生信息 -->
+	<select id="selectStudentXinXiList" parameterType="com.hjt.pojo.FieldList" resultType="com.hjt.pojo.FieldList">
+		select stu_code,
+			stu_name,
+			stu_id,
+			stu_identity,
+			stu_xingbie,
+			banji_id,
+			banji_name,
+			jiaoshi_name
+		from t_student a
+		left join t_banji b
+		on a.stu_banji_id=b.banji_id
+		left join t_jiaoshi c
+		on b.banji_jiaoshi_id=c.jiaoshi_id
+		<include refid="selectXueShengXinXiListWhere"></include>
+		ORDER BY a.stu_id ASC
+	</select>
+
+	<!-- 管理员查看学生信息总条数 -->
+	<select id="selectStudentXinXiListCount" parameterType="com.hjt.pojo.FieldList" resultType="Integer">
+		select count(stu_id)
+		from t_student a
+		left join t_banji b
+		on a.stu_banji_id=b.banji_id
+		left join t_jiaoshi c
+		on b.banji_jiaoshi_id=c.jiaoshi_id
+		<include refid="selectXueShengXinXiListWhere"></include>
+		ORDER BY a.stu_id ASC
+	</select>
+
+	<!-- 管理员根据id查询学生信息 -->
+	<select id="selectStudentXinXiByCode" parameterType="String" resultType="com.hjt.pojo.FieldList">
+		select stu_code,
+			stu_name,
+			stu_id,
+			stu_identity,
+			stu_xingbie,
+			banji_name,
+			banji_id,
+			jiaoshi_id,
+			jiaoshi_name
+		from t_student a
+		left join t_banji b
+		on a.stu_banji_id=b.banji_id
+		left join t_jiaoshi c
+		on b.banji_jiaoshi_id=c.jiaoshi_id
+		where stu_id=#{stuId}
+	</select>
+	<!-- 管理员查询班级及辅导员信息 -->
+	<select id="selectBanJiAndFuDaoYuanXinXi" resultType="com.hjt.pojo.FieldList">
+		select banji_id,
+				banji_name,
+				banji_jiaoshi_id,
+				jiaoshi_id,
+				jiaoshi_name
+			from t_banji a
+			left join t_jiaoshi b
+			on a.banji_jiaoshi_id=b.jiaoshi_id
+	</select>
+	<!-- 管理员查询辅导员信息 -->
+	<select id="selectFuDaoYuanXinXi" resultType="com.hjt.pojo.FieldList">
+		select jiaoshi_id,
+				jiaoshi_name
+			from t_jiaoshi where jiaoshi_fudaoyuan=1
+	</select>
+
+
+	<!-- 管理员修改学生信息 -->
+	<update id="updateStudentXinXi" parameterType="String">
+		update t_student set stu_name=#{updateStuName},
+								stu_xingbie=#{updateStuXingBie},
+								stu_code=#{updateStuCode},
+								stu_identity=#{updateStuIdentity},
+								stu_banji_id=#{updateStuBanJiId}
+								where stu_id=#{updateStuId}
+	</update>
+	<!-- 管理员新增学生信息 -->
+	<insert id="createStudentXinXi" parameterType="com.hjt.pojo.FieldList">
+	insert into t_student(stu_name,stu_pwd,stu_nianling,stu_xingbie,stu_code,stu_identity,stu_banji_id)
+						values(#{stu_name},#{stu_pwd},#{stu_nianling},#{stu_xingbie},#{stu_code},#{stu_identity},#{stu_banji_id})
+	</insert>
+	<!-- 管理员删除学生信息 -->
+	<delete id="deleteStuXinXi" parameterType="Integer">
+		delete from t_student where stu_id=${stuId}
+	</delete>
+
+
+	<sql id="selectJiaoShiXinXiListWhere">
+		<where>
+			<if test="jiaoshi_code != null">
+				and jiaoshi_code=#{jiaoshi_code}
+			</if>
+			<if test="jiaoshi_name != null">
+				and jiaoshi_name=#{jiaoshi_name}
+			</if>
+			<if test="jiaoshi_fudaoyuan != null">
+				and jiaoshi_fudaoyuan=#{jiaoshi_fudaoyuan}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 管理员查看教师信息 -->
+	<select id="selectTeacherXinXiList" parameterType="com.hjt.pojo.FieldList" resultType="com.hjt.pojo.FieldList">
+		select * from t_jiaoshi
+		<include refid="selectJiaoShiXinXiListWhere"></include>
+	</select>
+	<!-- 管理员查看教师信息总条数 -->
+	<select id="selectTeacherXinXiListCount" parameterType="com.hjt.pojo.FieldList" resultType="Integer">
+		select count(jiaoshi_id)
+			from t_jiaoshi
+		<include refid="selectJiaoShiXinXiListWhere"/>
+	</select>
+
+	<!-- 管理员根据id查看教师信息 -->
+	<select id="selectTeacherXinXiById" parameterType="Integer" resultType="com.hjt.pojo.FieldList">
+		select *
+			from t_jiaoshi
+		where jiaoshi_id=#{teaId}
+	</select>
+
+	<!-- 管理员修改学生信息 -->
+	<update id="updateTeacherXinXi" parameterType="com.hjt.pojo.FieldList">
+		update t_jiaoshi set jiaoshi_name=#{updateTeaName},
+								jiaoshi_code=#{updateTeaCode},
+								jiaoshi_xingbie=#{updateTeaXingBie},
+								jiaoshi_nianling=#{updateTeaNianLing},
+								jiaoshi_identity=#{updateTeaIdentity},
+								jiaoshi_fudaoyuan=#{updateTeaLeiXing}
+							where jiaoshi_id=#{updateTeaId}
+	</update>
+
+	<!-- 管理员新增教师信息 -->
+	<insert id="createTeacherXinXi" parameterType="com.hjt.pojo.FieldList">
+		insert into t_jiaoshi(jiaoshi_name,jiaoshi_pwd,jiaoshi_code,jiaoshi_xingbie,jiaoshi_nianling,jiaoshi_identity,jiaoshi_fudaoyuan)
+								values(#{jiaoshi_name},#{jiaoshi_pwd},#{jiaoshi_code},#{jiaoshi_xingbie},#{jiaoshi_nianling},#{jiaoshi_identity},#{jiaoshi_fudaoyuan})
+	</insert>
+
+	<!-- 管理员删除教师信息 -->
+	<delete id="deleteTeacherXinXi" parameterType="int">
+		delete from t_jiaoshi where jiaoshi_id=#{teaId}
+	</delete>
+
+	<sql id="selectGongGaoXinXiListWhere">
+		<where>
+			<if test="gonggaoId != null and gonggaoId != ''">
+				gonggao_id=#{gonggaoId}
+			</if>
+			<if test="gonggaoTitle != null and gonggaoTitle != ''">
+				gonggao_title like "%"#{gonggaoTitle}"%"
+			</if>
+			<if test="gonggaoNeiRong != null and gonggaoNeiRong != ''">
+				gonggao_neirong like "%"#{gonggaoNeiRong}"%"
+			</if>
+		</where>
+	</sql>
+
+	<!-- 管理员查询公告信息 -->
+	<select id="selectAllGongGao" parameterType="String" resultType="com.hjt.pojo.FieldList">
+		select * from t_gonggao
+		<include refid="selectGongGaoXinXiListWhere"></include>
+	</select>
+	<!-- 管理员查询公告信息总条数 -->
+	<select id="selectAllGongGaoCount" parameterType="String" resultType="Integer">
+		select count(gonggao_id) from t_gonggao
+		<include refid="selectGongGaoXinXiListWhere"></include>
+	</select>
+	<!-- 管理员根据公告id查询公告信息 -->
+	<select id="selectGongGaoById" parameterType="int" resultType="com.hjt.pojo.FieldList">
+		select * from t_gonggao
+		where gonggao_id=#{gonggaoId}
+	</select>
+
+	<!-- 管理员根据公告id修改公告信息 -->
+	<update id="updateGongGaoById" parameterType="String">
+		update t_gonggao set gonggao_title=#{gonggaoTitle},gonggao_neirong=#{gonggaoNeiRong}
+		where gonggao_id=#{gonggaoId}
+	</update>
+
+	<!-- 管理员新增公告信息 -->
+	<insert id="insertGongGaoXinXi" parameterType="String">
+		insert into t_gonggao(gonggao_title,gonggao_guanliyuan_id,gonggao_neirong,gonggao_faqiriqi) values(#{gonggaoTitle},#{gongGaoGuanLiYuanId},#{gonggaoNeiRong},#{gonggaoFaQiRiqi})
+	</insert>
+	<!-- 管理员删除公告信息 -->
+	<delete id="deleteGongGaoXinXi" parameterType="int">
+		delete from t_gonggao where gonggao_id=#{gonggaoId}
+	</delete>
+</mapper>

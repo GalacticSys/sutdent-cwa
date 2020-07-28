@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjt.dao.StudentDao">
+	<!-- 查询考勤信息SQL片段 -->
+	<sql id="selectKaoQinListWhere">
+		<where>
+			<if test="stu_code != null">
+				c.stu_code=#{stu_code}
+			</if>
+			<if test="stu_banji_id != null">
+				and c.stu_banji_id =#{stu_banji_id}
+			</if>
+			<if test="kecheng_name != null">
+				and kecheng_name like "%"#{kecheng_name}"%"
+			</if>
+			<if test="kaoqin_riqi != null">
+				and kaoqin_riqi like "%"#{kaoqin_riqi}"%"
+			</if>
+			<if test="qingjia_riqi != null">
+				and qingjia_riqi like "%"#{qingjia_riqi}"%"
+			</if>
+		</where>
+	</sql>
+	<!--根据学号、课程、日期，查询考勤信息  -->
+	<select id="selectKaoQinList" parameterType="String" resultType="com.hjt.pojo.FieldList">
+		SELECT  c.stu_code,
+				c.stu_name,
+				g.kecheng_name,
+				d.banji_name,
+				kaoqin_shifouqingjia,
+				f.jiaoshi_name,
+				kaoqin_riqi,
+				kaoqin_id
+			FROM t_kaoqin a
+			LEFT JOIN t_xuanke b
+			ON a.kaoqin_xuanke_id=b.xuanke_id
+			LEFT JOIN t_student c
+			ON b.xuanke_stu_id=c.stu_id
+			LEFT JOIN t_banji d
+			ON c.stu_banji_id=d.banji_id
+			LEFT JOIN (SELECT * from t_shouke WHERE t_shouke.shouke_banji_id=#{stu_banji_id}) e
+			ON b.xuanke_kecheng_id=e.shouke_kecheng_id
+			LEFT JOIN t_jiaoshi f
+			ON e.shouke_jiaoshi_id=f.jiaoshi_id
+			LEFT JOIN t_kecheng g
+			ON b.xuanke_kecheng_id=g.kecheng_id
+		<include refid="selectKaoQinListWhere"></include>
+		ORDER BY b.xuanke_stu_id ASC
+	</select>
+	<!--根据学号、课程、日期，查询考勤信息总条数  -->
+	<select id="selectKaoQinListCount" parameterType="String" resultType="Integer">
+		SELECT  count(a.kaoqin_id)
+			FROM t_kaoqin a
+			LEFT JOIN t_xuanke b
+			ON a.kaoqin_xuanke_id=b.xuanke_id
+			LEFT JOIN t_student c
+			ON b.xuanke_stu_id=c.stu_id
+			LEFT JOIN t_banji d
+			ON c.stu_banji_id=d.banji_id
+			LEFT JOIN (SELECT * from t_shouke WHERE t_shouke.shouke_banji_id=#{stu_banji_id}) e
+			ON b.xuanke_kecheng_id=e.shouke_kecheng_id
+			LEFT JOIN t_jiaoshi f
+			ON e.shouke_jiaoshi_id=f.jiaoshi_id
+			LEFT JOIN t_kecheng g
+			ON b.xuanke_kecheng_id=g.kecheng_id
+		<include refid="selectKaoQinListWhere"></include>
+	</select>
+
+	<!--根据学号、课程、日期，查询请假信息  -->
+	<select id="selectQingJiaList" parameterType="String" resultType="com.hjt.pojo.FieldList">
+		SELECT  c.stu_code,
+				c.stu_name,
+				g.kecheng_name,
+				d.banji_name,
+				qingjia_shifoupijia,
+				qingjia_shijian,
+				qingjia_yuanyin,
+				qingjia_shifoupiyue,
+				qingjia_riqi,
+				f.jiaoshi_name,
+				qingjia_riqi,
+				qingjia_id
+			FROM t_qingjia a
+			LEFT JOIN t_xuanke b
+			ON a.qingjia_xuanke_id=b.xuanke_id
+			LEFT JOIN t_student c
+			ON b.xuanke_stu_id=c.stu_id
+			LEFT JOIN t_banji d
+			ON c.stu_banji_id=d.banji_id
+			LEFT JOIN (SELECT * from t_shouke WHERE t_shouke.shouke_banji_id=#{stu_banji_id}) e
+			ON b.xuanke_kecheng_id=e.shouke_kecheng_id
+			LEFT JOIN t_jiaoshi f
+			ON e.shouke_jiaoshi_id=f.jiaoshi_id
+			LEFT JOIN t_kecheng g
+			ON b.xuanke_kecheng_id=g.kecheng_id
+		<include refid="selectKaoQinListWhere"></include>
+	</select>
+	<!--根据学号、课程、日期，查询请假信息总条数  -->
+	<select id="selectQingJiaListCount" parameterType="String" resultType="Integer">
+		SELECT  count(a.qingjia_id)
+			FROM t_qingjia a
+			LEFT JOIN t_xuanke b
+			ON a.qingjia_xuanke_id=b.xuanke_id
+			LEFT JOIN t_student c
+			ON b.xuanke_stu_id=c.stu_id
+			LEFT JOIN t_banji d
+			ON c.stu_banji_id=d.banji_id
+			LEFT JOIN (SELECT * from t_shouke WHERE t_shouke.shouke_banji_id=#{stu_banji_id}) e
+			ON b.xuanke_kecheng_id=e.shouke_kecheng_id
+			LEFT JOIN t_jiaoshi f
+			ON e.shouke_jiaoshi_id=f.jiaoshi_id
+			LEFT JOIN t_kecheng g
+			ON b.xuanke_kecheng_id=g.kecheng_id
+		<include refid="selectKaoQinListWhere"></include>
+	</select>
+
+	<!-- 根据学生身份证修改学生密码 -->
+	<update id="updateStuMiMa" parameterType="String">
+		UPDATE t_student SET stu_pwd=#{update_stuPwd} WHERE stu_identity=#{update_stuIdentity} AND stu_code=#{stu_code}
+	</update>
+
+	<!-- 根据学生id、课程名称查询学生选课信息 -->
+	<select id="selectStudentXuanKe" parameterType="String" resultType="com.hjt.pojo.FieldList">
+		select * FROM
+				t_xuanke a
+			INNER JOIN t_student b
+			ON a.xuanke_stu_id=b.stu_id
+			INNER JOIN t_kecheng c
+			ON a.xuanke_kecheng_id=c.kecheng_id
+			WHERE a.xuanke_stu_id=#{stuId} AND c.kecheng_name=#{qingjia_kechengname}
+	</select>
+
+	<!-- 根据上课日期、课程名称、班级id查询课程表信息信息 -->
+	<select id="selectKeChengBiao" parameterType="String" resultType="com.hjt.pojo.FieldList">
+		select * from
+				t_kechengbiao a
+				RIGHT join (select * from t_kecheng WHERE t_kecheng.kecheng_name=#{qingjiaKechengname}) b
+				on a.kechengbiao_kecheng_id=b.kecheng_id
+				RIGHT join t_banji c
+				on a.kechengbiao_banji_id=c.banji_id
+				RIGHT join t_student d
+				on c.banji_id=d.stu_banji_id
+				where d.stu_id=#{stuId} and a.kechengbiao_shangkeriqi=#{qingjiaShangkeshijian}
+
+	</select>
+	<!-- 添加请假表信息 -->
+	<insert id="insertQingJiaXinXi" parameterType="String">
+		insert into
+			t_qingjia
+			(qingjia_riqi,qingjia_shijian,qingjia_yuanyin,qingjia_xuanke_id,qingjia_kechengbiao_id)
+			values
+			(#{qingjiaRiqi},#{qingjiaShijian},#{qingjiaYuanyin},#{qingjiaXuankeId},#{qingjiaKechengbiaoId})
+	</insert>
+
+	<!-- 根据学生id查询个人信息 -->
+	<select id="selectGeRenXinXiByCode" parameterType="String" resultType="com.hjt.pojo.FieldList">
+		SELECT *
+				FROM t_student a
+			LEFT JOIN t_banji b
+			ON a.stu_banji_id=b.banji_id
+			where a.stu_code=#{stuCode}
+	</select>
+
+
+	<!-- 学生查询课程表信息条件 -->
+	<sql id="selectKeChengBiaoListWhere">
+		<where>
+			<if test="stuId != null and stuId != ''">
+			stu_id=#{stuId}
+			</if>
+			<if test="jiaoshiName != null and jiaoshiName != ''">
+			and jiaoshi_name=#{jiaoshiName}
+			</if>
+			<if test="kechengName != null and kechengName != ''">
+			and kecheng_name LIKE "%"#{kechengName}"%"
+			</if>
+			<if test="shangkeriqi != null and shangkeriqi != ''">
+			and kechengbiao_shangkeriqi like "%"#{shangkeriqi}"%"
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 学生查询课程表信息 -->
+	<select id="selectShangKeXinXi" parameterType="String" resultType="com.hjt.pojo.FieldList">
+		select stu_name,
+				banji_name,
+				kecheng_name,
+				jiaoshi_name,
+				kechengbiao_shangkeriqi
+		from t_student a
+			RIGHT join t_xuanke b
+			on a.stu_id=b.xuanke_stu_id
+			LEFT join t_shouke c
+			on a.stu_banji_id=c.shouke_banji_id
+			and b.xuanke_kecheng_id=c.shouke_kecheng_id
+			left join t_banji d
+			on a.stu_banji_id=d.banji_id
+			left join t_kecheng e
+			on b.xuanke_kecheng_id=e.kecheng_id
+			left join t_jiaoshi f
+			on c.shouke_jiaoshi_id=f.jiaoshi_id
+			left join t_kechengbiao g
+			on a.stu_banji_id=g.kechengbiao_banji_id
+			and e.kecheng_id=g.kechengbiao_kecheng_id
+		<include refid="selectKeChengBiaoListWhere"></include>
+	</select>
+
+
+	<sql id="selectGongGaoXinXiListWhere">
+		<where>
+			<if test="gonggaoId != null and gonggaoId != ''">
+				gonggao_id=#{gonggaoId}
+			</if>
+			<if test="gonggaoTitle != null and gonggaoTitle != ''">
+				gonggao_title like "%"#{gonggaoTitle}"%"
+			</if>
+			<if test="gonggaoNeiRong != null and gonggaoNeiRong != ''">
+				gonggao_neirong like "%"#{gonggaoNeiRong}"%"
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 学生查询公告信息 -->
+	<select id="selectStuGongGaoXin" parameterType="String" resultType="com.hjt.pojo.FieldList">
+		select * from t_gonggao
+		<include refid="selectGongGaoXinXiListWhere"/>
+	</select>
+	<!-- 学生查询公告信息总条数 -->
+	<select id="selectStuGongGaoXinCount" parameterType="String" resultType="Integer">
+		select count(gonggao_id) from t_gonggao
+		<include refid="selectGongGaoXinXiListWhere"/>
+	</select>
+</mapper>

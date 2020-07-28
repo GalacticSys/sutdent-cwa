@@ -1,0 +1,401 @@
+<!DOCTYPE HTML>
+<html lang="ec" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<!-- 引入css样式文件 -->
+<!-- 引入css样式文件 -->
+<link href="/css/bootstrap-theme.css" rel="stylesheet" />
+<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
+<link href="/css/bootstrap.css" rel="stylesheet"/>
+<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+<!--导入bootstrap.js包-->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>		
+	<title>客户管理</title>
+<style type="text/css">
+	body {
+	position:absolute;
+	z-index:100000000000000;
+    width: 80%;
+    margin-top:30px;
+    margin-bottom:30px;
+    margin-left:10%;
+    font-family: "Microsoft YaHei", sans-serif;
+ }
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover{
+     background-color: #222222;
+ }
+ .navbar-collapse{
+    padding-left: 5px;
+    padding-right: 5px;
+ }
+  .nav>li>a{
+     color:#444;
+     margin: 0 5px;
+ }
+ .dropdown-menu{
+     float: none;
+     min-width: 200px;
+     margin-left: 0;
+     background-color: #E3E3E3;
+     box-shadow: none;
+     text-align: center;
+ }
+  .dropdown-menu>li>a{
+     padding: 10px 15px;
+ }
+ .pageContainer{
+ 	width: 100%;
+ 	height: 700px;	
+ 	overflow:no;    		 
+ }
+  .pageSidebar{
+    width: 15%;
+    padding-bottom:30px;
+    height:100%;    
+    float: left;
+    background-color: #e3e3e3;
+ }
+  .pageContent{
+	width: 85%;
+	height: 100%;	
+	float: left;
+	overflow:no;
+ }
+.mainFrame
+{
+
+	width: 100%;
+	height: 100%;
+	overflow:scroll;
+	scrolling:no;
+}
+.splitter{
+	 position:absolute;
+	 z-index:0;
+     width: 5px;
+     height: 700px;
+     bottom: 0;
+     top:72px;
+     left: 15%;
+     position: absolute; 
+     overflow: no;
+     background-color: #fff;
+ }
+ .footer {
+     width: 100%;
+     height: 30px;
+     line-height: 30px;
+     margin-top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     position: absolute; 
+     z-index: 10;
+     background-color:#DFDFDF;
+ }
+ .nav>li
+ {
+ 	text-align: center;
+ }
+</style>
+<!-- overflow -->
+<!-- visible默认值。内容不会被修剪，会呈现在元素框之外。 -->
+<!-- hidden内容会被修剪，并且其余内容是不可见的。 -->
+<!-- scroll内容会被修剪，但是浏览器会显示滚动条以便查看其余的内容。 -->
+<!-- auto如果内容被修剪，则浏览器会显示滚动条以便查看其余的内容。 -->
+<!-- inherit规定应该从父元素继承 overflow 属性的值。 -->
+<!--  position -->
+<!--  absolute生成绝对定位的元素，相对于 static 定位以外的第一个父元素进行定位。元素的位置通过 "left", "top", "right" 以及 "bottom" 属性进行规定 -->
+<!--  fixed生成绝对定位的元素，相对于浏览器窗口进行定位。元素的位置通过 "left", "top", "right" 以及 "bottom" 属性进行规定。 -->
+<!--  relative生成相对定位的元素，相对于其正常位置进行定位。因此，"left:20" 会向元素的 LEFT 位置添加 20 像素。 -->
+<!--  static默认值。没有定位，元素出现在正常的流中（忽略 top, bottom, left, right 或者 z-index 声明）。 -->
+<!--  inherit规定应该从父元素继承 position 属性的值。 -->
+</head>
+
+<body style="background-image: url('../images/bodyTuPian-5.jpg'); background-size:100%;background-repeat:no-repeat;opacity:0.8; ">
+
+<div id="body" class="body">
+<!-- 导航栏按钮部分 -->
+	<nav class="navbar navbar-inverse">
+	    <div class="container-fluid ">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">学生考勤管理系统 v2.0</a>
+			</div>
+	       <div class="collapse navbar-collapse ">
+	           <ul class="nav navbar-nav navbar-right ">
+	               <li role="presentation">
+	                   <a href="#">当前用户：<span class="badge" th:text="${teacher.jiaoshi_name}"></span>
+	                   </a>
+	               </li>
+	               <li role="presentation">
+	                   <a href="#">用户类型：<span class="badge" th:text="${msg}"></span>
+	                   </a>
+	               </li>
+	               <!-- 下拉框菜单开始 -->
+             		<li class="dropdown">
+                 		<a class="dropdown-toggle" data-toggle="dropdown" href="nav4.html" target="mainFrame">
+                     	个人设置<span class="caret"></span>
+                 		</a>
+                 		<ul class="dropdown-menu">
+                     		<li>
+                         	<a href="#" data-toggle="modal" data-target="#xiugaimima">修改密码</a>
+                     		</li>
+                     		<li>
+                         	<a href="#" data-toggle="modal" data-target="#gerenxinxi" onclick="gerenxinxi()">查看个人信息</a>
+                     		</li>
+                 		</ul>
+             		</li>
+             		<!-- 下拉框菜单开始结束 -->
+	               <li>
+	                   <a href="/logout.action" onclick="return panduanshifoutuichu()">
+	                   <span class="glyphicon glyphicon-lock"></span>退出登录
+	                   </a>
+	                </li>
+	            </ul>
+	       </div>
+	    </div>      
+	</nav>
+	<!-- 中间正文部分（左侧导航栏+右侧iframe） -->
+	<div class="pageContainer">
+	     <!-- 左侧导航栏 -->
+	     <div class="pageSidebar">
+	         <ul class="nav nav-stacked nav-pills" th:if="${msg} eq '教师'">
+				<br/><br/>	
+	             <li role="presentation">
+	                 <a href="/teacher/kaoQinXinXi.action" target="mainFrame" >考勤信息</a>
+	             </li>
+	             <li role="presentation">
+	                 <a href="/teacher/qingJiaXinXi.action" target="mainFrame">请假信息</a>
+	             </li>
+	             <li role="presentation">
+	                 <a href="/jiaoshi/selectKeChengBiao.action" target="mainFrame">课程表</a>
+	             </li>    
+	             <li role="presentation">
+	                 <a href="/jiaoshiandfudaoyuan/selectGongGaoXinXi.action" target="mainFrame">最新公告</a>
+	             </li>
+	         </ul>
+	         <ul class="nav nav-stacked nav-pills" th:if="${msg} eq '辅导员'">
+				<br/><br/>	
+	             <li role="presentation">
+	                 <a href="/fudaoyuan/kaoQinXinXi.action" target="mainFrame" >考勤信息</a>
+	             </li>
+	             <li role="presentation">
+	                 <a href="/fudaoyuan/qingJiaXinXi.action" target="mainFrame">请假信息</a>
+	             </li>
+	             <li role="presentation">
+	                 <a href="/jiaoshiandfudaoyuan/selectGongGaoXinXi.action" target="mainFrame">最新公告</a>
+	             </li>
+	         </ul>
+	     </div>
+			<!-- 左侧导航和正文内容的分隔线 -->
+	     <div class="splitter"></div>
+	     <!-- 正文内容部分 -->
+	     <div class="pageContent">
+	       <iframe src="" id="mainFrame" name="mainFrame" class="mainFrame"
+	       frameborder="0" scrolling="no">
+	       </iframe> 
+	     </div>
+	 </div>
+	<!-- 修改密码模态框 -->
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="xiugaimima" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog">
+	       <div class="modal-content">
+	           <div class="modal-header">
+	               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	               <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+	           </div>
+	           <div class="modal-body">
+			   	<form class="form-horizontal" id="update_tea_mima">
+						<div class="form-group">
+							<label for="update_teaIdentity" class="col-sm-2 control-label">
+							 	身份证号:
+							</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id=update_teaIdentity placeholder="身份证号码" name="update_teaIdentity" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="update_teaPwd" class="col-sm-2 control-label">
+								新密码:
+							</label> 
+							<div class="col-sm-10">
+								<input type="password" class="form-control" id="update_teaPwd" placeholder="新密码" name="update_teaPwd" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="update_teaPwdTwo" class="col-sm-2 control-label">
+								确认密码:
+							</label> 
+							<div class="col-sm-10">
+								<input type="password" class="form-control" id="update_teaPwdTwo" placeholder="确认密码" name="update_teaPwdTwo" />
+							</div>
+						</div>
+					</form>
+			   </div>
+	           <div class="modal-footer">
+	               <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	               <button type="button" class="btn btn-primary" onclick="quedingxiugai()">确定</button>
+	           </div>
+	       </div><!-- /.modal-content -->
+	   </div><!-- /.modal-dialog -->
+	</div><!-- 修改密码模态框--end/.modal fade -->
+	<!-- 个人信息模态框 -->
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="gerenxinxi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog">
+	       <div class="modal-content">
+	           <div class="modal-header">
+	               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	               <h4 class="modal-title" id="myModalLabel">个人信息</h4>
+	           </div>
+	           <div class="modal-body" style="height: 300px;">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label for="teaName" class="col-sm-2 control-label">
+							 	姓名:
+							</label>
+							<div class="col-sm-10">
+								<input type="text" id="teaName" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="teaCode" class="col-sm-2 control-label">
+								编号:
+							</label> 
+							<div class="col-sm-10">
+								<input type="text" id="teaCode" readonly="readonly" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="teaIdentity" class="col-sm-2 control-label">
+								身份证:
+							</label> 
+							<div class="col-sm-10">
+								<input type="text" id="teaIdentity" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="teaShifoudongjie" class="col-sm-2 control-label">
+								账号状态:
+							</label> 
+							<div class="col-sm-10">
+								<input type="text" id="teaShifoudongjie" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="teaXingbie" class="col-sm-2 control-label">
+								性别:
+							</label> 
+							<div class="col-sm-10">
+								<input type="text" id="teaXingbie" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="teaNianling"  class="col-sm-2 control-label">
+								年龄:
+							</label> 
+							<div class="col-sm-10">
+								<input type="text" id="teaNianling" readonly="readonly" class="form-control"/>
+							</div>
+						</div>
+					
+					</form>
+			   </div>
+	           <div class="modal-footer">
+	               <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	           </div>
+	       </div><!-- /.modal-content -->
+	   </div><!-- /.modal-dialog -->
+	</div><!-- 个人信息模态框 end/.modal fade -->
+</div>
+<script type="text/javascript">
+ $(".nav li").click(function() {
+        $(".active").removeClass('active');
+        $(this).addClass("active");
+    }); 
+ function quedingxiugai()
+ {
+	var update_teaIdentity=$("#update_teaIdentity").val();
+	var update_teaPwd=$("#update_teaPwd").val();
+	var update_teaPwdTwo=$("#update_teaPwdTwo").val();
+	if(update_teaIdentity=="")
+	{
+		alert('请输入身份证号.....');	
+		return;
+	}
+	if(update_teaPwd=="")
+	{
+		alert('请输入新密码');	
+		return;
+	}
+	if(update_teaPwdTwo=="")
+	{
+		alert('请再次输入新密码');
+		return;
+	}
+	if(update_teaPwd!=update_teaPwdTwo)
+	{
+		alert('密码不一致，请重新输入');
+		return;
+	}
+	var formUpdateTeaMiMa=$("#update_tea_mima").serialize();
+	$.ajax
+	({
+		asyc:false,
+		type:"post",
+		cache:false,
+		url:"/teacher/updateTeaMiMa.action",
+		data:formUpdateTeaMiMa,
+		dataType:"text",
+		success:function(data)
+		{
+			if(data =="OK")
+			{			        				        	
+			    alert("用户修改成功,请重新登录");
+			    window.location.href = "";
+			}
+			if(data =="FALL")
+			{
+			    alert("修改密码失败，请重试");
+			}
+		},
+		error:function(e){
+			alert("error");				
+		}
+	})	
+}
+ 
+function gerenxinxi() {
+	 $.ajax
+		({
+			asyc:false,
+			type:"get",
+			cache:false,
+			url:"/teacher/gerenxinxi.action",
+			dataType:"json",
+			success:function(data)
+			{ 				
+				$("#teaName").val(data.jiaoshi_name);
+				$("#teaNianling").val(data.jiaoshi_nianling);
+				$("#teaXingbie").val(data.jiaoshi_xingbie);
+				$("#teaCode").val(data.jiaoshi_code);
+				$("#teaShifoudongjie").val("正常");				
+				$("#teaIdentity").val(data.jiaoshi_identity);
+			},
+			error:function(e){
+				alert("error");				
+			}
+		})
+}
+
+function panduanshifoutuichu() {
+	if(confirm('确定要退出?'))
+	{
+		return true;	
+	}
+	return false;
+}
+ </script>
+</html>

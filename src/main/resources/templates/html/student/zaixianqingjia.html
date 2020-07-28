@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html lang="ec" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- 引入css样式文件 -->
+<link href="/css/bootstrap-theme.css" rel="stylesheet" />
+<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
+<link href="/css/bootstrap.css" rel="stylesheet"/>
+<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+<!--导入bootstrap.js包-->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<title>Insert title here</title>
+</head>
+<body>
+	<div>
+	    <div class="modal-header">
+		    <h1 class="modal-title" id="myModalLabel">在线请假</h1>
+	    </div>
+		<div class="modal-body">
+			<form class="form-horizontal" name="zaixianqingjia" id="zaixianqingjia">
+				<div class="form-group">
+					<label for="qingjia_kechengname" class="col-sm-2 control-label">
+						课程名称:
+					</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="qingjia_kechengname" placeholder="课程名称" name="qingjia_kechengname" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="qingjia_shangkeshijian" class="col-sm-2 control-label">
+						上课时间:
+					</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="qingjia_shangkeshijian" placeholder="yyyy-mm-dd" name="qingjia_shangkeshijian" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="qingjia_shijian" class="col-sm-2 control-label">
+						请假时间:
+					</label> 
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="qingjia_shijian" placeholder="XXX至XXX" name="qingjia_shijian" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="qingjia_yuanyin" class="col-sm-2 control-label">
+						请假原因:
+					</label> 
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="qingjia_yuanyin" placeholder="请假原因" name="qingjia_yuanyin" />
+					</div>
+				</div>
+				<center>
+		   		 	<button type="submit" class="btn btn-primary" onclick="return checkDate()">确定</button>
+					<br>
+					<font color="red">
+						<!-- 提示信息 -->
+						<span th:text="${msg}"></span>
+					</font>
+				</center>  
+			</form>
+		</div>
+    </div><!-- /.modal-content -->
+</body>
+<script type="text/javascript">
+	function checkDate()
+	{
+		var qingjia_kechengname=$("#qingjia_kechengname").val();
+		var chengGong=$("#chengGong").val();
+		var qingjia_shangkeshijian=$("#qingjia_shangkeshijian").val();
+		var qingjia_shijian=$("#qingjia_shijian").val();
+		var qingjia_yuanyin=$("#qingjia_yuanyin").val();
+		var reg =/^([1-2]\d{3})[\/|\-](0?[1-9]|10|11|12)[\/|\-]([1-2]?[0-9]|0[1-9]|30|31)$/ig ;
+		if(qingjia_kechengname=="")
+		{
+			alert ("请输入课程名称");
+			return false;
+		}
+		if (!reg.test(qingjia_shangkeshijian))
+		{
+			alert ("请输入正确的时间格式！");
+			return false;
+		}
+		if(qingjia_shijian=="")
+		{
+			alert("请输入请假时间");
+			return false;
+		}
+		if(qingjia_yuanyin=="")
+		{
+			alert ("请输入请假原因");
+			return false;
+		}
+		document.getElementById("zaixianqingjia").action="/student/zaiXianQingJia.action";
+		return true;
+	}
+</script>
+</html>

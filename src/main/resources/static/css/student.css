@@ -1,0 +1,76 @@
+body {
+    width: 80%;
+    
+    
+    
+    font-family: "Microsoft YaHei", sans-serif;
+ }
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover{
+     background-color: #222222;
+ }
+ .navbar-collapse{
+    padding-left: 5px;
+    padding-right: 5px;
+ }
+  .nav>li>a{
+     color:#444;
+     margin: 0 5px;
+ }
+ .dropdown-menu{
+     float: none;
+     min-width: 200px;
+     margin-left: 0;
+     background-color: #E3E3E3;
+     box-shadow: none;
+     text-align: center;
+ }
+  .dropdown-menu>li>a{
+     padding: 10px 15px;
+ }
+ .pageContainer{
+ 	width: 100%;
+ 	height: 800px;	
+ 	overflow:no;    		 
+ }
+  .pageSidebar{
+    width: 15%;
+    padding-bottom:30px;
+    height:100%;    
+    float: left;
+    background-color: #e3e3e3;
+ }
+  .pageContent{
+	width: 85%;
+	height: 100%;	
+	float: left;
+	overflow:no;
+ }
+.mainFrame
+{
+	width: 100%;
+	height: 100%;
+	overflow:scroll;
+	scrolling:no;
+}
+.splitter{
+     width: 5px;
+     height: 100%;
+     bottom: 0;
+     top:110px;
+     left: 22%;
+     position: absolute; 
+     overflow: no;
+     background-color: #fff;
+ }
+ .footer {
+     width: 100%;
+     height: 30px;
+     line-height: 30px;
+     margin-top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     position: absolute; 
+     z-index: 10;
+     background-color:#DFDFDF;
+ }
